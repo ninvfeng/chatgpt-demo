@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro'
 import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser'
 
 const apiKey = import.meta.env.OPENAI_API_KEY
+const apiUrl = import.meta.env.OPENAI_API_URL
 
 export const post: APIRoute = async (context) => {
   const body = await context.request.json()
@@ -13,7 +14,7 @@ export const post: APIRoute = async (context) => {
     return new Response('No input text')
   }
 
-  const completion = await fetch('https://api.openai.com/v1/chat/completions', {
+  const completion = await fetch(`${apiUrl}/v1/chat/completions`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,
@@ -47,7 +48,7 @@ export const post: APIRoute = async (context) => {
             //   ],
             // }
             const json = JSON.parse(data)
-            const text = json.choices[0].delta?.content            
+            const text = json.choices[0].delta?.content
             const queue = encoder.encode(text)
             controller.enqueue(queue)
           } catch (e) {
